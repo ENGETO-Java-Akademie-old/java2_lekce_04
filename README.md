@@ -42,6 +42,8 @@ try {
 
 Ukázka StackTrace při chybě
 
+![Image](Drawing2.png)
+
 ```
 Exception in thread "main" java.lang.NullPointerException
         at com.example.myproject.Book.getTitle(Book.java:16)
@@ -95,6 +97,7 @@ Exception:java.lang.Exception: Chyba
 ### Použití výjimek
 
 #### Diagram hierarchie vyjimek v JDK
+![Image](Drawing1.png)
 
 ### Základní typy Excepetions v JDK
 
