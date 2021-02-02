@@ -42,7 +42,7 @@ try {
 
 Ukázka StackTrace při chybě
 
-![Image](Drawing2.png)
+![Image](Drawing1.png)
 
 ```
 Exception in thread "main" java.lang.NullPointerException
@@ -97,7 +97,7 @@ Exception:java.lang.Exception: Chyba
 ### Použití výjimek
 
 #### Diagram hierarchie vyjimek v JDK
-![Image](Drawing1.png)
+![Image](Drawing2.png)
 
 ### Základní typy Excepetions v JDK
 
@@ -110,13 +110,15 @@ V Javě jsou definováné dva různé typy vyjímek a jejich chování. Checked 
 
 Vyjímka má několik částí
 
-try - klíčové slovo na začátku bloku
-try (definice AutoCloseable zdroje) - volitelný blok pro definici zdrojů, které budou automaticky uzavřené a není nutné je uzavírat ve finally bloku
-try {} - hlavní blok kódu, který miže vyvolat vyjímku
-catch (definice vyjímky) - definice typu vyjímky k ošetření
-catch (..) {ošetření vyjímky} - blok kódu na ošetření vyjímky
-finally {} - blok kódu, který se provede v každém případě
-Try-Catch
+- try - klíčové slovo na začátku bloku
+- try (definice AutoCloseable zdroje) - volitelný blok pro definici zdrojů, které budou automaticky uzavřené a není nutné je uzavírat ve finally bloku
+- try {} - hlavní blok kódu, který miže vyvolat vyjímku
+- catch (definice vyjímky) - definice typu vyjímky k ošetření
+- catch (..) {ošetření vyjímky} - blok kódu na ošetření vyjímky
+- finally {} - blok kódu, který se provede v každém případě
+
+
+#### Try-Catch
 ```
 try {
    statements-1
@@ -125,7 +127,7 @@ catch ( exception-class-name  variable-name ) {
    statements-2
 }
 ```
-Multi-catch blok
+#### Multi-catch blok
 ```
 try {
    statements-1
@@ -148,7 +150,7 @@ catch ( exception-class-name | other-exception-class-name  variable-name ) {
     statements-3
 }
 ```
-Try-Catch-Finally
+#### Try-Catch-Finally
 ```
 try {
    statements-1
@@ -159,7 +161,7 @@ catch ( exception-class-name  variable-name ) {
     statements-3
 }
 ```
-Try-with-resources
+#### Try-with-resources
 Specialní konstukt v Javě značně zjednodušuje práci se I/O je try-with-resources. Tento konstrukt umožní vytvořit instance objektů java.lang.AutoCloseable bez potřeby definovat jejich uzavření. Práce se soubory je tímto mnohem jednodušší a je možné vyvarovat se chyb, kde soubory jsou programem uzamčené až do ukončení běhu programu. Více detailů si ukážeme v další kapitole vysvětljující práci s I/O.
 
 ```
@@ -390,12 +392,12 @@ HTTP je protokol pro Client-Server komunikaci přes internet. Skoro všechna int
 - Tělo
 
 Metody
-GET - Jenom URL
-POST - URL a tělo zprávy
-PUT - URL a tělo zprávy (idempotentní - více volání skončí stejným stavem)
-DELETE - URL a tělo zprávy
-PATCH - Slouží k částečné upravě data
-OPTION - Pomocné volání
+- GET - Jenom URL
+- POST - URL a tělo zprávy
+- PUT - URL a tělo zprávy (idempotentní - více volání skončí stejným stavem)
+- DELETE - URL a tělo zprávy
+- PATCH - Slouží k částečné upravě data
+- OPTION - Pomocné volání
 
 ### REST API
 - Služba která s kterou je možné komunikovat pomocí HTTP
