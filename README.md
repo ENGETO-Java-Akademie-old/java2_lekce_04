@@ -196,3 +196,182 @@ Od verze JDK 14
 Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.lang.Long.equals(Object)" because "<local1>" is null
     at Main.main(Main.java:8)
 ```
+
+### Řízení toku programu pomocí výjimek
+
+#### Vyvolání výjimky pomocí Throw
+Vyvolání výjimky se dělá pomocí klíčového slova throw a následuje objekt odvozený od Exception. Většinou se ten objekt rovnou vytváří throw new Exception("some message");
+
+```
+throw someThrowableObject;
+```
+```
+public void someMethod(int size) {
+    if (size < 0) {
+        throw new InvalidArgumentExecption("Size have to be non-negative");
+    }
+}
+```
+#### Klíčové slovo Throws
+
+Pro Checked (hlídané) výjimky je potřeba definovat u metod, který typ výjimky může nastat. Toto se dělá pomocí klíčového slova throws uvedeného mezi definicí metody a jejím tělem.
+
+```
+public void thisMethodMayThrowException() throws TypeOfTheExceptionThrown {
+   ... tělo metody, kde může vyjímka nastat ...
+}
+```
+
+Ukázka volání vnořené výjimky:
+
+1. Vyvolání výjimky
+2. Odchycení v Catch bloku
+3. Vyvolání runtime výjimky (neošetřená)
+4. Finally blok
+5. Předání výjimky dál - v tomto případě pád programu a výpis StackTrace
+
+```
+class First {
+  void run() throws Exception{
+    System.out.println("First run");
+    throw new Exception("Error");
+  }
+}
+class Second {
+  void run(){
+    First f = new First();
+    try{
+      f.run();
+    }catch(Exception e){
+      System.out.println("Second catch");
+      throw new RuntimeException("Crash");
+    }finally{
+      System.out.println("Second finally");
+    }
+  }
+}
+class Main {
+  public static void main(String[] args) {
+    Second s = new Second();
+    s.run();
+  }
+}
+```
+
+Výsledek:
+```
+First run
+Second catch
+Second finally
+Exception in thread "main" java.lang.RuntimeException: Crash
+    at Second.run(Main.java:15)
+    at Main.main(Main.java:25)
+```
+
+### Dědičnost a Throws
+
+Je možné definovat vlastní definice výjimek, které se navzájem řetězí a dědí od sebe. Takové řetězení má svoje pravidla a překladač kontrolu, že nejsou definované nedosažitelné catch bloky.
+
+- Výjimka je zachycena nejbližším vhodným catch blokem
+- Speciálnější výjimka musí být uvedena před obecnější
+- V kódu nejsou nedosažitelné bloky, kde jsou speciálnější výjimky uvedeny později
+
+#### Není možné definovat obecnější výjimku před specifičtější
+```
+class MyException1 extends Exception {}
+class MyException2 extends MyException1 {}
+class Main {
+  public static void main(String[] args) {
+    int x = 1;
+    try {
+      if (x == 1) {
+        throw new MyException1();
+      } else if (x == 2) {
+        throw new MyException2();
+      }
+      // Obecnější výjimka MyException1 má přednost
+    } catch (MyException1 mv) {
+   //CHYBA:
+   // Speciálnější výjimka MyException2 nikdy nebude zachycena, proto tuto část překladač nepovolí
+    } catch (MyException2 mv) {
+    }
+  }
+}
+
+```
+
+```
+ javac -classpath .:/run_dir/junit-4.12.jar:target/dependency/* -d . Main.java
+Main.java:18: error: exception MyException2 has already been caught
+    } catch (MyException2 mv) {
+      ^
+1 error
+compiler exit status 1
+```
+
+### Hlavní výhody použití výjimek
+- Oddělení programové logiky pro ošetření chyb od hlavní logiky
+- Řetězení vyjímek a propagování vyjímky v Call Stack na místo, kde je řešení nejefektivnějsí
+- Možnost definovat a seskupit různé typy chyb dohromady
+- Užitečný reporting chyb
+
+#### Praktické použití
+
+Dosud jsme použili e.printStackTrace() k vypsání chybové hlášky do konzole. Jde o jednoduché a efektivní řešení pokud aplikaci ladíme na vlastním počítači. V případě serverové aplikace tento přístup není vhodný hned z několika důvodů.
+
+1. Logování so System.out a System.err není úplně flexibilní
+2. Chybí identifikace, kdy k chybě došlo
+3. Když už jsme vyjímku zachytili, tak je občaš vhodné doplnit další data
+4. Chybí identifikace závažnosti chyby
+Pro tento případ existuje hned několik Frameworků, které zjednodušují logování. Například Log4j, Log4j2, java.util.logging nebo SLF4J. Liší se v mnoha detailech a možnosti konfigurace. Ale při psaní kodu vypadají všechny relativně podobně.
+
+```
+import java.util.logging.*;
+class Main {
+  private static Logger logger = Logger.getLogger("com.test.logovani");
+  public static void main(String[] args) {
+        logger.fine("doing stuff");
+        try {
+            throw new Exception();
+        } catch (Exception ex) {
+            // Log the exception
+            logger.log(Level.WARNING, "trouble ", ex);
+        }
+        logger.fine("done");
+  }
+}
+```
+
+```
+> javac -classpath .:/run_dir/junit-4.12.jar:target/dependency/* -d . Main.java
+> java -classpath .:/run_dir/junit-4.12.jar:target/dependency/* Main
+Oct 17, 2020 9:30:55 PM Main main
+WARNING: trouble
+java.lang.Exception
+    at Main.main(Main.java:8)
+```
+
+### Příklady k procvičení
+
+#### 1 Vyvolání výjimky
+```
+Napiště jednoduchý program, který vyvolá výjimku.
+Např: Přístup do pole mimo definovaný rozsah, dělení nulou, cast na špatný typ,..
+```
+#### 2 Vlastní výjimka
+```
+Napište program, který definuje vlastní výjimku (hlídané) a zkusí ji vyvolat
+```
+#### 3 Vyvolání nehlídané výjimky
+```
+Napiště program, který zkusí vyvolat nehlídanou vyjímku.
+Např: Nekonečná rekurze, pokus alokovat více než povolené paměti, ...
+```
+#### 4 Řetězení výjimek
+```
+Napiště program, který definuje 2 typy výjimek. Definuje metodu, která v sobě bude řetězit výjimky.
+1. Vyvolá výjimku prvního typu
+2. Zachytí ji
+3. Vyvolá výjimku druhého typu
+4. Nechá program skončit vypsáním StackTrace
+```
