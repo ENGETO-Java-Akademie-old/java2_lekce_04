@@ -375,3 +375,71 @@ Napiště program, který definuje 2 typy výjimek. Definuje metodu, která v so
 3. Vyvolá výjimku druhého typu
 4. Nechá program skončit vypsáním StackTrace
 ```
+
+
+## HTTP Client v JDK
+
+Od verze JDK 11 je v Javě nové API pro volání HTTP volání. Můžete najít návody na použití `HttpUrlConnection`, které je v Javě od prvních verzí. Pro vás je lepší se tomu vyhnout.
+
+### Co to je HTTP Klient a k čemu to slouží
+HTTP je protokol pro Client-Server komunikaci přes internet. Skoro všechna internetová komunikace to využívá.
+
+- URL
+- Metoda
+- Hlavička
+- Tělo
+
+Metody
+GET - Jenom URL
+POST - URL a tělo zprávy
+PUT - URL a tělo zprávy (idempotentní - více volání skončí stejným stavem)
+DELETE - URL a tělo zprávy
+PATCH - Slouží k částečné upravě data
+OPTION - Pomocné volání
+
+### REST API
+- Služba která s kterou je možné komunikovat pomocí HTTP
+- API Volání dodržují několik pravidel
+
+### Použití
+
+#### Inicializace klienta
+```
+HttpClient httpClient = HttpClient.newBuilder()
+              .version(Version.HTTP_2)  // this is the default
+              .build();
+```
+
+#### Vytvoření GET requestu
+```
+HttpRequest request = HttpRequest.newBuilder()
+               .uri(URI.create("https://https.github.io/"))
+               .GET()   // this is the default
+               .build();
+```
+
+#### Vytvoření POST requestu
+```
+HttpRequest mainRequest = HttpRequest.newBuilder()
+               .uri(URI.create("https://http2.github.io/"))
+               .POST(BodyPublishers.ofString(json))
+               .build();
+```
+
+#### Poslání requestu a zpracování výsledku
+```
+HttpResponse response = httpClient.send(request, BodyHandlers.ofString());
+logger.info("Response status code: " + response.statusCode());
+logger.info("Response headers: " + response.headers());
+logger.info("Response body: " + response.body());
+```
+
+#### Poslání requestu a asynchroní zpracování výsledku
+```
+httpClient.sendAsync(request, BodyHandlers.ofString())
+          .thenAccept(response -> {
+       logger.info("Response status code: " + response.statusCode());
+       logger.info("Response headers: " + response.headers());
+       logger.info("Response body: " + response.body());
+});
+```
